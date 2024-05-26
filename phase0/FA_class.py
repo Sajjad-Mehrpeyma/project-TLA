@@ -22,11 +22,14 @@ class State:
 
 
 class DFA:
+    state_ids: dict[int] = {}
+
     def __init__(self) -> None:
         self.init_state = None
         self.states: list['State'] = []
         self.alphabet: list['str'] = []
-        self.final_states: list['State'] = []
+        # self.final_states: list['State'] = []
+        self.final_states: set['State'] = []
 
     @staticmethod
     def deserialize_json(json_str: str) -> 'DFA':
@@ -66,35 +69,58 @@ class DFA:
         return json.dumps(fa)
 
     def add_state(self, id: int | None = None) -> State:
-        ...
+        new_state = State(id | None)
+        self.states.append(new_state)
+        DFA.state_ids[new_state.id] = new_state
+        return new_state
 
     def add_transition(self, from_state: State, to_state: State, input_symbol: str) -> None:
-        ...
+        from_state.add_transition(input_symbol, to_state)
 
     def assign_initial_state(self, state: State) -> None:
         ...
 
     def add_final_state(self, state: State) -> None:
-        ...
+        self.final_states.add(state)
 
     def get_state_by_id(self, id) -> State | None:
-        ...
+        return DFA.state_ids[id]
 
     def is_final(self, state: State) -> bool:
-        ...
+        return state in self.final_states
 
 
 
 class NFAState:
-    ...
+    __counter = 0
+
+    def __init__(self, id: None) -> None:
+        if id is None:
+            self.id = State._get_next_id()
+        else:
+            self.id = id
+        self.transitions: dict[str, 'State'] = {}
+
+    def add_transition(self, symbol: str, state: 'State') -> None:
+        self.transitions[symbol] = state
+
+    @classmethod
+    def _get_next_id(cls) -> int:
+        current_id = cls.__counter
+        cls.__counter += 1
+        return current_id
 
 
 class NFA:
     def __init__(self) -> None:
-        ...
+        self.init_state = None
+        self.states: list['State'] = []
+        self.alphabet: list['str'] = []
+        # self.final_states: list['State'] = []
+        self.final_states: set['State'] = []
 
     @staticmethod
-    def convert_DFA_instanse_to_NFA_instanse(dfa_machine: 'DFA') -> 'NFA':
+    def convert_DFA_instance_to_NFA_instance(dfa_machine: 'DFA') -> 'NFA':
         ...
     
     @staticmethod
