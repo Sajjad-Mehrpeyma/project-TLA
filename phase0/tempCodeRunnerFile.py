@@ -1,0 +1,7 @@
+  # print(nfa.serialize_to_json())
+    # print('*'*100)
+    # NFA.union(nfa,nfa2)
+    # print(nfa.serialize_to_json())
+    # print('*'*100)
+    # NFA.concat(nfa,nfa2)
+    # print(nfa.serialize_to_json())
