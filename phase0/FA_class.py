@@ -114,9 +114,9 @@ class NFA:
     def __init__(self) -> None:
         self.init_state: 'NFAState' = None
         self.states: list['NFAState'] = []
-        self.alphabet: set['str'] = []
+        self.alphabet: set['str'] = set()
         # self.final_states: list['State'] = []
-        self.final_states: set['NFAState'] = []
+        self.final_states: set['NFAState'] = set()
         self.state_ids: dict[int, 'NFAState'] = {}
 
     @staticmethod
@@ -128,7 +128,7 @@ class NFA:
             nfa.add_state(id)
 
         nfa.init_state = nfa.state_ids[dfa_machine.init_state.id]
-        nfa.final_states = [nfa.state_ids[state.id] for state in dfa_machine.final_states]
+        nfa.final_states = set([nfa.state_ids[state.id] for state in dfa_machine.final_states])
         for state in dfa_machine.states:
             for key in state.transitions.keys():
                 to_state = state.transitions[key]
@@ -139,21 +139,21 @@ class NFA:
     def union(machine1: 'NFA', machine2: 'NFA') -> 'NFA':
         machine1.alphabet = machine1.alphabet.union(machine2.alphabet)
         offset = len(machine1.state_ids)
-        for id in machine2.state_ids.keys():
-            machine1.state_ids[id + offset] = machine2.state_ids[id]
-            machine2.state_ids[id].id += offset
+        machine1.states += machine2.states
+        for state in machine2.states:
+            machine1.state_ids[state.id + offset] = state
+            state.id += offset
         machine1.init_state.add_transition('λ', machine2.init_state)
         return machine1
 
     @staticmethod
     def concat(machine1: 'NFA', machine2: 'NFA') -> 'NFA':
-
         machine1.alphabet = machine1.alphabet.union(machine2.alphabet)
         offset = len(machine1.state_ids)
-
-        for id in machine2.state_ids.keys():
-            machine1.state_ids[id + offset] = machine2.state_ids[id]
-            machine2.state_ids[id].id += offset
+        machine1.states += machine2.states
+        for state in machine2.states:
+            machine1.state_ids[state.id + offset] = state
+            state.id += offset
 
         for state in machine1.final_states:
             state.add_transition('λ', machine2.init_state)
@@ -163,9 +163,10 @@ class NFA:
     
     @staticmethod
     def star(machine: 'NFA') -> 'NFA':
-        machine.final_states.add(machine.init_state)
         for state in machine.final_states:
             state.add_transition('λ',machine.init_state)
+        machine.final_states.add(machine.init_state)
+        return machine
 
     def add_state(self, id: int) -> NFAState:
         new_state = NFAState(id)
