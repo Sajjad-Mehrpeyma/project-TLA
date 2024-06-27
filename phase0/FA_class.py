@@ -25,9 +25,9 @@ class DFA:
         self.state_ids: dict[int, 'State'] = {}
         self.init_state = None
         self.states: list['State'] = []
-        self.alphabet: set['str'] = []
+        self.alphabet: set['str'] = {}
         # self.initial_states: list['State'] = []
-        self.final_states: set['State'] = []
+        self.final_states: set['State'] = set()
 
     @staticmethod
     def deserialize_json(json_str: str) -> 'DFA':
@@ -39,14 +39,14 @@ class DFA:
         for state_str in json_fa["states"]:
             fa.add_state(int(state_str[2:]))
 
-        fa.init_state = fa.get_state_by_id(json_fa["initial_state"][2:])
+        fa.init_state = fa.get_state_by_id(int(json_fa["initial_state"][2:]))
 
         for final_str in json_fa["final_states"]:
-            fa.add_final_state(fa.get_state_by_id(final_str[2:]))
+            fa.add_final_state(fa.get_state_by_id(int(final_str[2:])))
 
         for state_str in json_fa["states"]:
             for symbol in fa.alphabet:
-                fa.add_transition(fa.get_state_by_id(state_str[2:]), fa.get_state_by_id(json_fa[state_str][symbol][2:]),
+                fa.add_transition(fa.get_state_by_id(int(state_str[2:])), fa.get_state_by_id(int(json_fa[state_str][symbol][2:])),
                                   symbol)
 
         return fa
@@ -55,8 +55,8 @@ class DFA:
         fa = {
             "states": list(map(lambda s: f"q_{s.id}", self.states)),
             "initial_state": f"q_{self.init_state.id}",
-            "final_states": list(map(lambda s: f"q_{s.id}", self.final_states)),
-            "alphabet": self.alphabet
+            "final_states": list(map(lambda s: f"q_{s.id}", list(self.final_states))),
+            "alphabet": list(self.alphabet)
         }
 
         for state in self.states:
@@ -67,7 +67,7 @@ class DFA:
         return json.dumps(fa)
 
     def add_state(self, id: int | None = None) -> State:
-        new_state = State(id | None)
+        new_state = State(id if id else None)
         self.states.append(new_state)
         self.state_ids[new_state.id] = new_state
         return new_state
