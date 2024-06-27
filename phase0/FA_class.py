@@ -122,7 +122,7 @@ class NFA:
     @staticmethod
     def convert_DFA_instance_to_NFA_instance(dfa_machine: 'DFA') -> 'NFA':
         nfa = NFA()
-        nfa.alphabet = dfa_machine.alphabet + ['λ']
+        nfa.alphabet = dfa_machine.alphabet.union('λ')
         
         for id in dfa_machine.state_ids.keys():
             nfa.add_state(id)
@@ -167,8 +167,8 @@ class NFA:
         for state in machine.final_states:
             state.add_transition('λ',machine.init_state)
 
-    def add_state(self, id: int | None = None) -> NFAState:
-        new_state = NFAState(id | None)
+    def add_state(self, id: int) -> NFAState:
+        new_state = NFAState(id)
         self.states.append(new_state)
         self.state_ids[new_state.id] = new_state
         return new_state
@@ -177,13 +177,14 @@ class NFA:
         fa = {
             "states": list(map(lambda s: f"q_{s.id}", self.states)),
             "initial_state": f"q_{self.init_state.id}",
-            "final_states": list(map(lambda s: f"q_{s.id}", self.final_states)),
-            "alphabet": self.alphabet
+            "final_states": list(map(lambda s: f"q_{s.id}", list(self.final_states))),
+            "alphabet": list(self.alphabet)
         }
 
         for state in self.states:
             fa[f"q_{state.id}"] = {}
             for symbol in self.alphabet:
-                fa[f"q_{state.id}"][symbol] = f"q_{state.transitions[symbol].id}"
+                if symbol in state.transitions:
+                    fa[f"q_{state.id}"][symbol] = f"q_{state.transitions[symbol].id}"
 
         return json.dumps(fa)
