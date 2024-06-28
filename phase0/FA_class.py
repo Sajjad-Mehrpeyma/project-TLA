@@ -38,7 +38,6 @@ class DFA:
         json_fa = json.loads(json_str)
 
         fa.alphabet = set(json_fa["alphabet"])
-
         for state_str in json_fa["states"]:
             fa.add_state(int(state_str[2:]))
 
@@ -70,7 +69,7 @@ class DFA:
         return json.dumps(fa)
 
     def add_state(self, id: int | None = None) -> State:
-        new_state = State(id if id else None)
+        new_state = State(id if len(str(id)) else None)
         self.states.append(new_state)
         self.state_ids[new_state.id] = new_state
         return new_state

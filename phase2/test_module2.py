@@ -6,7 +6,7 @@ from utils import utils
 
 class TestModule2(unittest.TestCase):
     def test(self):
-        test_directory = "../data/module2Test"
+        test_directory = r"data/module2Test"
         image_files = [file for file in os.listdir(test_directory) if file.endswith((".jpg", ".png"))]
         image_files.sort()
 
@@ -21,7 +21,7 @@ class TestModule2(unittest.TestCase):
 
         res = module2.solve(json_fa, binary_array)
 
-        self.assertEqual(res, True)
+        self.assertEqual(res[0], True)
 
         image_file = image_files[1]
         image_path = os.path.join(test_directory, image_file)
@@ -30,7 +30,7 @@ class TestModule2(unittest.TestCase):
 
         res = module2.solve(json_fa, binary_array)
 
-        self.assertEqual(res, False)
+        self.assertEqual(res[0], False)
 
 
 if __name__ == "__main__":
