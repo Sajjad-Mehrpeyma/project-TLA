@@ -11,7 +11,10 @@ class State:
 
     def add_transition(self, symbol: str, state: 'State') -> None:
         self.transitions[symbol] = state
-
+    def add_image(self, image):
+        self.image = image
+    def path_to_state(self, path):
+        self.path = path
     @classmethod
     def _get_next_id(cls) -> int:
         current_id = cls.__counter
