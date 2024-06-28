@@ -1,10 +1,24 @@
+import sys
+sys.path.append(r'..\project-template')
 from math import log2
 from phase0.FA_class import DFA, State
+from phase2.module2 import row_col_to_address
+from utils import utils
 from utils.utils import imageType
 
 
 def solve(json_str: str, resolution: int) -> imageType:
-    ...
+    fa = DFA.deserialize_json(json_str)
+    image = [ [0 for _ in range(resolution)] for _ in range(resolution)]
+    for row in range(resolution):
+        for col in range(resolution):
+            addr = row_col_to_address(row, col, resolution)
+            state = fa.init_state
+            for q in addr:
+                state = state.transitions[q]
+            if fa.is_final(state):
+                image[row][col] = 1    
+    return image
 
 
 if __name__ == "__main__":
@@ -17,3 +31,5 @@ if __name__ == "__main__":
         4
     )
     print(pic_arr)
+    # utils.save_image(pic_arr)
+    

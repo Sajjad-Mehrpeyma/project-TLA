@@ -22,7 +22,7 @@ def convert_pictures_to_gray_scale_and_binary_array(path: str, res: int = 512) -
     return binary_array.tolist()
 
 
-def save_image(pic_array: imageType) -> None:
+def save_image(pic_array: imageType, id) -> None:
     p_arr = np.array(pic_array)
     im = (p_arr * 255).astype(np.uint8)
-    cv2.imwrite('temp.png', im)
+    cv2.imwrite(f'temp{id}.png', im)
