@@ -90,7 +90,7 @@ def address_to_row_col(address,size):
 
 def row_col_to_address(row,col,size):
     # cols_div = {0:['0','3'], 1:['1','2']}
-    rows_div = {0: ['2','3'], 1:['0','1']} #sec remainder of row and col
+    rows_div = {0: ['0','1'], 1:['2','3']}#sec remainder of row and col
     scale = size/2
     addr = ''
     while scale != 1:
